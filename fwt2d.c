@@ -66,7 +66,7 @@ void fwt_rows(void)
       }
       if (length == 1)
       {
-        goto end;
+        goto end1;
       }
 
       // copy for next iteration
@@ -75,7 +75,39 @@ void fwt_rows(void)
         input_img[row][i] = temp[row][i];
       }
     }
-    end: ;
+    end1: ;
+  }
+}
+
+void fwt_columns(void)
+{
+  for (int column = 0; column < Y; column++)
+  {
+    for (int length = Y/2; ; length/=2)
+    {
+      // length is current length of working area
+      // it is halved in every iteration until it is 1
+      // iterate through working area
+      for (int i = 0; i < length; i++)
+      {
+        temp[i][column] = input_img[i*2][column] + input_img[i*2 + 1][column];
+        temp[i][column] /= 2;
+
+        temp[i + length][column] = input_img[i*2][column] - input_img[i*2 + 1][column];
+        temp[i + length][column] /= 2;
+      }
+      if (length == 1)
+      {
+        goto end2;
+      }
+
+      // copy for next iteration
+      for (int i = 0; i < Y; i++)
+      {
+        input_img[i][column] = temp[i][column];
+      }
+    }
+    end2: ;
   }
 }
 
@@ -90,6 +122,10 @@ int main (int argc, char *argv[])
   read_input(argv[1]);
   fwt_rows();
   printf("\nOutput:\n");
+  print_array(temp);
+
+  fwt_columns();
+  printf("\nColumns output:\n");
   print_array(temp);
 
   return 0;
